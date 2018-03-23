@@ -44,11 +44,11 @@ public class GameClient {
      */
     public GameClient(String serverName, int portNumber) {
         try {
-            gui = new GameGUI();
             gameSocket = new Socket(serverName, portNumber);
             stdIn = new BufferedReader(new InputStreamReader(System.in));
             socketIn = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
             socketOut = new PrintWriter((gameSocket.getOutputStream()), true);
+            gui = new GameGUI(gameSocket);
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
             System.out.println("Error constructing client");
@@ -80,19 +80,11 @@ public class GameClient {
                 System.out.println(response);
                 gui.messageArea.setText(response);
 
-                if (response.equals("Displaying board")) {
-                    while(!response.equals("Done displaying board")){
-                        response = socketIn.readLine();
-                        System.out.println(response);
-                    }
-                    socketOut.flush();
-                }
-                else if (response.equals("Game Over!")){
+                if (response.equals("Game Over!")){
                     System.out.println("Game Over! Exiting game...");
                     break;
                 }
                 else if(!response.equals("Waiting for opponent...")){
-                    String move = "";
                     gui.nameArea.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
@@ -102,110 +94,133 @@ public class GameClient {
                             socketOut.println(name);
                         }
                     });
-                    gui.button1.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 1");
-                            socketOut.println("1");
-                                gui.button1.setText(move);
-                        }
-                    });
-                    gui.button2.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 2");
-                            socketOut.println("2");
-//                            try {
-//                                gui.button2.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
+                    if(response.charAt(response.length()-1) == 'X')
+                        gui.listener.setMark("X");
+                    else if(response.charAt(response.length()-1) == 'O')
+                        gui.listener.setMark("O");
+//                    if(response.charAt(response.length()-1) == 'n') {
+//                        while(true) {
+//                            System.out.println("in loop");
+//                            if (gui.sem) {
+//                                System.out.println("in move");
+//                                gui.sem = false;
+//                                move = gui.checkBoard();
+//                                socketOut.println(move);
 //                            }
-                        }
-                    });
-                    gui.button3.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 3");
-                            socketOut.println("3");
-//                            try {
-//                                gui.button3.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button4.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 4");
-                            socketOut.println("4");
-//                            try {
-//                                gui.button4.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button5.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 5");
-                            socketOut.println("5");
-//                            try {
-//                                gui.button5.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button6.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 6");
-                            socketOut.println("6");
-//                            try {
-//                                gui.button6.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button7.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 7");
-                            socketOut.println("7");
-//                            try {
-//                                gui.button7.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button8.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 8");
-                            socketOut.println("8");
-//                            try {
-//                                gui.button8.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
-                    gui.button9.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("pressed button 9");
-                            socketOut.println("9");
-//                            try {
-//                                gui.button9.setText(socketIn.readLine());
-//                            } catch(IOException j){
-//                                j.printStackTrace();
-//                            }
-                        }
-                    });
+//                        }
+//                    }
+//                    gui.button1.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 1");
+//                            socketOut.println("1");
+//                                gui.button1.setText("X");
+//                        }
+//                    });
+//                    gui.button2.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 2");
+//                            socketOut.println("2");
+//                            gui.button2.setText("X");
+////                            try {
+////                                gui.button2.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button3.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 3");
+//                            socketOut.println("3");
+//                            gui.button3.setText("");
+////                            try {
+////                                gui.button3.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button4.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 4");
+//                            socketOut.println("4");
+//                            gui.button4.setText("X");
+////                            try {
+////                                gui.button4.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button5.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 5");
+//                            socketOut.println("5");
+//                            gui.button5.setText("X");
+////                            try {
+////                                gui.button5.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button6.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 6");
+//                            socketOut.println("6");
+//                            gui.button6.setText("X");
+////                            try {
+////                                gui.button6.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button7.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 7");
+//                            socketOut.println("7");
+//                            gui.button7.setText("X");
+////                            try {
+////                                gui.button7.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button8.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 8");
+//                            socketOut.println("8");
+//                            gui.button8.setText("X");
+////                            try {
+////                                gui.button8.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
+//                    gui.button9.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            System.out.println("pressed button 9");
+//                            socketOut.println("9");
+//                            gui.button9.setText("X");
+////                            try {
+////                                gui.button9.setText(socketIn.readLine());
+////                            } catch(IOException j){
+////                                j.printStackTrace();
+////                            }
+//                        }
+//                    });
 
                 }
             }

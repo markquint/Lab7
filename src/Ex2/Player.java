@@ -90,13 +90,6 @@ public class Player {
      */
     public void play(){
 
-        board.setBoardSocket(playerSocket);
-
-//        socketOutput.println("Displaying board");
-//
-//        board.displayToClient();
-//
-//        socketOutput.println("Done displaying board");
         try {
             getOpponent().socketOutput.println("Waiting for opponent...");
             makeMove();
@@ -105,16 +98,8 @@ public class Player {
             System.out.println("Error making move");
         }
 
-//        socketOutput.println("Displaying board");
-//
-//        board.displayToClient();
-//
-//        socketOutput.println("Done displaying board");
-
         board.display();
         if(board.xWins()||board.oWins()||board.isFull()) {
-            socketOutput.print("Game Over!");
-            System.out.println("Game Over!");
 //            getOpponent().socketOutput.println("Game Over!");
             if(board.xWins()) {
                 socketOutput.println(name + " wins!");
@@ -141,11 +126,9 @@ public class Player {
         int rownum = 0;
         int colnum = 0;
         int input;
-        socketOutput.println(name + ", please click where you want to place your " + mark + " in");
-        socketOutput.flush();
+        socketOutput.println(name + ", please click where you want to place your " + mark);
         input = Integer.parseInt(socketInput.readLine());
 
-        socketOutput.println(String.valueOf(mark));
         if(input == 1){
             rownum = 0;
             colnum = 0;
@@ -167,7 +150,6 @@ public class Player {
         else if(input == 5){
             rownum = 1;
             colnum = 1;
-            socketOutput.println(String.valueOf(mark));
         }
         else if(input == 6){
             rownum = 1;
