@@ -68,13 +68,15 @@ public class Player {
      */
     public void getPlayerName(){
         try{
-            socketOutput.println("Please enter the name of " + mark + " player: ");
+            socketOutput.println("You are the " + mark + " player! Please enter your name below. ");
+            getOpponent().socketOutput.println("Waiting for opponent...");
             while(true) {
                 name = socketInput.readLine();
                 if (name != null){
                     break;
                 }
             }
+//            socketOutput.println(String.valueOf(mark));
             socketOutput.flush();
         } catch(IOException e){
             e.printStackTrace();
@@ -90,11 +92,11 @@ public class Player {
 
         board.setBoardSocket(playerSocket);
 
-        socketOutput.println("Displaying board");
-
-        board.displayToClient();
-
-        socketOutput.println("Done displaying board");
+//        socketOutput.println("Displaying board");
+//
+//        board.displayToClient();
+//
+//        socketOutput.println("Done displaying board");
         try {
             getOpponent().socketOutput.println("Waiting for opponent...");
             makeMove();
@@ -103,11 +105,11 @@ public class Player {
             System.out.println("Error making move");
         }
 
-        socketOutput.println("Displaying board");
-
-        board.displayToClient();
-
-        socketOutput.println("Done displaying board");
+//        socketOutput.println("Displaying board");
+//
+//        board.displayToClient();
+//
+//        socketOutput.println("Done displaying board");
 
         board.display();
         if(board.xWins()||board.oWins()||board.isFull()) {
@@ -136,35 +138,80 @@ public class Player {
      * Checks to make sure row number and column number is valid before placing the mark.
      */
     public void makeMove() throws IOException{
-        int rownum, colnum;
-        String line;
-        int move = 0;
-        while(true) {
-            while (true) {
-                socketOutput.println(name + ", what row should your next " + mark + " be placed in?");
-                line = socketInput.readLine();
-                move = Integer.parseInt(line);
-                if (move < 0 || move > 2)
-                    socketOutput.println("Please enter a row number between 0 and 2");
-                else
-                    break;
-            }
-            rownum = move;
-            while (true) {
-                socketOutput.println(name + ", what column should your next " + mark + " be placed in?");
-                line = socketInput.readLine();
-                move = Integer.parseInt(line);
-                if (move < 0 || move > 2)
-                    socketOutput.println("Please enter a column number between 0 and 2.");
-                else
-                    break;
-            }
-            colnum = move;
-            if (board.getMark(rownum, colnum) == ' ')
-                break;
-            else
-                socketOutput.println("That spot already has a mark in it, try again.");
+        int rownum = 0;
+        int colnum = 0;
+        int input;
+        socketOutput.println(name + ", please click where you want to place your " + mark + " in");
+        socketOutput.flush();
+        input = Integer.parseInt(socketInput.readLine());
+
+        socketOutput.println(String.valueOf(mark));
+        if(input == 1){
+            rownum = 0;
+            colnum = 0;
         }
+        else if(input == 2){
+            rownum = 0;
+            colnum = 1;
+        }
+        else if(input == 3){
+            rownum = 0;
+            colnum = 2;
+//            socketOutput.println(String.valueOf(mark));
+        }
+        else if(input == 4){
+            rownum = 1;
+            colnum = 0;
+//            socketOutput.println(String.valueOf(mark));
+        }
+        else if(input == 5){
+            rownum = 1;
+            colnum = 1;
+            socketOutput.println(String.valueOf(mark));
+        }
+        else if(input == 6){
+            rownum = 1;
+            colnum = 2;
+//            socketOutput.println(String.valueOf(mark));
+        }
+        else if(input == 7){
+            rownum = 2;
+            colnum = 0;
+        }
+        else if(input == 8){
+            rownum = 2;
+            colnum = 1;
+        }
+        else if(input == 9){
+            rownum = 2;
+            colnum = 2;
+        }
+//        while(true) {
+//            while (true) {
+//                socketOutput.println(name + ", what row should your next " + mark + " be placed in?");
+//                line = socketInput.readLine();
+//                move = Integer.parseInt(line);
+//                if (move < 0 || move > 2)
+//                    socketOutput.println("Please enter a row number between 0 and 2");
+//                else
+//                    break;
+//            }
+//            rownum = move;
+//            while (true) {
+//                socketOutput.println(name + ", what column should your next " + mark + " be placed in?");
+//                line = socketInput.readLine();
+//                move = Integer.parseInt(line);
+//                if (move < 0 || move > 2)
+//                    socketOutput.println("Please enter a column number between 0 and 2.");
+//                else
+//                    break;
+//            }
+//            colnum = move;
+//            if (board.getMark(rownum, colnum) == ' ')
+//                break;
+//            else
+//                socketOutput.println("That spot already has a mark in it, try again.");
+//        }
         board.addMark(rownum, colnum, mark);
     }
 
@@ -198,6 +245,13 @@ public class Player {
      */
     public String getName(){
         return name;
+    }
+
+    /**
+     * Sets a players string name
+     */
+    public void setName(String s){
+        name = s;
     }
 
     /**
